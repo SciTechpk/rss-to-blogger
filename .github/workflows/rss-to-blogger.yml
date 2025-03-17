@@ -1,0 +1,30 @@
+name: RSS to Blogger AutoPoster
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Runs every hour
+  workflow_dispatch:  # Allow manual execution
+
+jobs:
+  post_to_blogger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set Up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install Dependencies
+        run: pip install requests feedparser google-auth google-auth-oauthlib google-auth-httplib2
+
+      - name: Run RSS to Blogger Script
+        env:
+          BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
+          BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
+          BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
+          BLOG_ID: ${{ secrets.BLOG_ID }}
+          RSS_FEED_URL: 'https://feeds.bbci.co.uk/news/rss.xml'
+        run: python rss_to_blogger.py
